@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Filesystem;
 
-use Illuminate\Filesystem\Filesystem as IlluminateFilesystem;
+use Illuminate\Filesystem\Filesystem as BaseFilesystem;
 use Illuminate\Support\Arr;
 use Symfony\Component\VarExporter\VarExporter;
 
@@ -20,7 +20,7 @@ class Filesystem
     protected int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
 
     public function __construct(
-        protected IlluminateFilesystem $filesystem,
+        protected BaseFilesystem $filesystem,
     ) {}
 
     public function basePath(string $path = ''): string
