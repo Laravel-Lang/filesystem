@@ -29,7 +29,7 @@ class Filesystem
         return $this->filesystem->glob($pattern, $flags);
     }
 
-    public function json(string $path, ?string $key = null, array $default = []): array
+    public function fromJson(string $path, ?string $key = null, array $default = []): array
     {
         $content = $this->filesystem->json($path);
 
@@ -40,7 +40,7 @@ class Filesystem
         return $content[$key] ?? $default;
     }
 
-    public function php(string $path, ?string $key = null, array $default = []): array
+    public function fromPhp(string $path, ?string $key = null, array $default = []): array
     {
         $content = require $path;
 

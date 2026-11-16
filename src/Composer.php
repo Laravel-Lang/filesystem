@@ -6,6 +6,7 @@ namespace LaravelLang\Filesystem;
 
 use Composer\InstalledVersions;
 use Composer\Semver\VersionParser;
+use Illuminate\Support\Arr;
 
 class Composer
 {
@@ -15,9 +16,7 @@ class Composer
             return true;
         }
 
-        $root = InstalledVersions::getRootPackage()['name'] ?? null;
-
-        return $vendor === $root;
+        return $vendor === $this->projectName();
     }
 
     public function hasPackage(?string $vendor): bool
@@ -36,5 +35,15 @@ class Composer
         }
 
         return InstalledVersions::satisfies(new VersionParser(), $vendor, $version);
+    }
+
+    protected function projectName(): ?string
+    {
+        return Arr::get($this->root(), 'name');
+    }
+
+    protected function root(): array
+    {
+        return InstalledVersions::getRootPackage();
     }
 }
