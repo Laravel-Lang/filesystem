@@ -115,6 +115,16 @@ class Filesystem
             Arr::undot($content)
         );
 
-        $this->filesystem->put($path, $exported);
+        $this->filesystem->put(
+            $path,
+            <<<PHP
+<?php
+
+declare(strict_types=1);
+
+return $exported;
+
+PHP
+        );
     }
 }
