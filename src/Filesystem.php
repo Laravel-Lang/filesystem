@@ -10,6 +10,7 @@ use Symfony\Component\VarExporter\VarExporter;
 
 use function array_merge;
 use function base_path;
+use function dirname;
 use function json_encode;
 use function ksort;
 use function mb_strtolower;
@@ -58,11 +59,24 @@ class Filesystem
         return $content[$key] ?? $default;
     }
 
-    public function store(string $path, array $content, bool $merge = false): void
+    public function storeArray(string $path, array $items, bool $merge = false): void
     {
+        $this->filesystem->ensureDirectoryExists(
+            dirname($path)
+        );
+
         $this->isJson($path)
-            ? $this->storeJson($path, $content, $merge)
-            : $this->storePhp($path, $content, $merge);
+            ? $this->storeJson($path, $items, $merge)
+            : $this->storePhp($path, $items, $merge);
+    }
+
+    public function store(string $path, string $content): void
+    {
+        $this->filesystem->ensureDirectoryExists(
+            dirname($path)
+        );
+
+        $this->filesystem->put($path, $content);
     }
 
     public function isJson(string $filename): bool
@@ -83,6 +97,13 @@ class Filesystem
         }
 
         return $content[$key] ?? $default;
+    }
+
+    public function ensureDelete(string $path): void
+    {
+        $this->filesystem->isFile($path)
+            ? $this->filesystem->delete($path)
+            : $this->filesystem->deleteDirectory($path);
     }
 
     protected function storeJson(string $path, array $content, bool $merge = false): void
