@@ -78,9 +78,7 @@ class Filesystem
 
     public function ensureDelete(string $path): void
     {
-        $this->filesystem->isFile($path)
-            ? $this->filesystem->delete($path)
-            : $this->filesystem->deleteDirectory($path);
+        $this->filesystem->deleteDirectory($path);
     }
 
     protected function storeJson(string $path, array $content, bool $merge = false): void
