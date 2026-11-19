@@ -5,23 +5,20 @@ declare(strict_types=1);
 namespace LaravelLang\Filesystem;
 
 use Illuminate\Filesystem\Filesystem as BaseFilesystem;
-use Illuminate\Support\Arr;
-use Symfony\Component\VarExporter\VarExporter;
+use LaravelLang\Filesystem\Processors\JsonProcessor;
+use LaravelLang\Filesystem\Processors\PhpProcessor;
 
-use function array_merge;
 use function base_path;
 use function dirname;
-use function json_encode;
-use function ksort;
 use function mb_strtolower;
 use function pathinfo;
 
 class Filesystem
 {
-    protected int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
-
     public function __construct(
         protected BaseFilesystem $filesystem,
+        protected JsonProcessor $jsonProcessor,
+        protected PhpProcessor $phpProcessor,
     ) {}
 
     public function basePath(string $path = ''): string
@@ -46,17 +43,7 @@ class Filesystem
 
     public function fromJson(string $path, ?string $key = null, array $default = []): array
     {
-        if (! $this->filesystem->exists($path)) {
-            return [];
-        }
-
-        $content = $this->filesystem->json($path);
-
-        if (! $key) {
-            return $content;
-        }
-
-        return $content[$key] ?? $default;
+        return $this->jsonProcessor->read($path, $key, $default);
     }
 
     public function storeArray(string $path, array $items, bool $merge = false): void
@@ -86,17 +73,7 @@ class Filesystem
 
     public function fromPhp(string $path, ?string $key = null, array $default = []): array
     {
-        if (! $this->filesystem->exists($path)) {
-            return [];
-        }
-
-        $content = require $path;
-
-        if (! $key) {
-            return $content;
-        }
-
-        return $content[$key] ?? $default;
+        return $this->phpProcessor->read($path, $key, $default);
     }
 
     public function ensureDelete(string $path): void
@@ -108,44 +85,11 @@ class Filesystem
 
     protected function storeJson(string $path, array $content, bool $merge = false): void
     {
-        if ($merge) {
-            $previous = $this->fromJson($path);
-        }
-
-        $data = array_merge($previous ?? [], $content);
-
-        ksort($data);
-
-        $this->filesystem->put($path, json_encode($data, $this->flags));
+        $this->jsonProcessor->store($path, $content, $merge);
     }
 
     protected function storePhp(string $path, array $content, bool $merge = false): void
     {
-        if ($merge) {
-            $previous = Arr::dot($this->fromPhp($path));
-            $current  = Arr::dot($content);
-
-            $data = array_merge($previous, $current);
-        } else {
-            $data = Arr::dot($content);
-        }
-
-        ksort($data);
-
-        $exported = VarExporter::export(
-            Arr::undot($content)
-        );
-
-        $this->filesystem->put(
-            $path,
-            <<<PHP
-<?php
-
-declare(strict_types=1);
-
-return $exported;
-
-PHP
-        );
+        $this->phpProcessor->store($path, $content, $merge);
     }
 }
