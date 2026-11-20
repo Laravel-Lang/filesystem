@@ -55,11 +55,11 @@ class Composer
             return true;
         }
 
-        if ($vendor === 'laravel/framework' && InstalledVersions::getVersion($vendor) === 'dev-master') {
-            return Semver::satisfies('dev-master', $version);
-        }
+        $installed = InstalledVersions::getVersion($vendor);
 
-        return InstalledVersions::satisfies(new VersionParser(), $vendor, $version);
+        return $installed === null
+            ? InstalledVersions::satisfies(new VersionParser(), $vendor, $version)
+            : Semver::satisfies($installed, $version);
     }
 
     protected function projectName(): ?string
