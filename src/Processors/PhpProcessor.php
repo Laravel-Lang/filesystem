@@ -13,14 +13,14 @@ use function sprintf;
 
 class PhpProcessor extends Processor
 {
-    protected string $template = <<<'PHP'
-        <?php
+    protected string $template = <<<PHP
+<?php
 
-        declare(strict_types=1);
+declare(strict_types=1);
 
-        return %s;
+return %s;
 
-        PHP;
+PHP;
 
     protected function getContent(string $path): array
     {
