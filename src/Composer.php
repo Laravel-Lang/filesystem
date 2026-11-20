@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Filesystem;
 
 use Composer\InstalledVersions;
+use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
 use Illuminate\Container\Attributes\Config;
 use Illuminate\Support\Arr;
@@ -52,6 +53,10 @@ class Composer
 
         if ($this->isForced($vendor)) {
             return true;
+        }
+
+        if ($vendor === 'laravel/framework' && InstalledVersions::getVersion($vendor) === 'dev-master') {
+            return Semver::satisfies('dev-master', $version);
         }
 
         return InstalledVersions::satisfies(new VersionParser(), $vendor, $version);
