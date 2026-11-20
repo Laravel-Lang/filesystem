@@ -11,7 +11,7 @@ use function array_merge;
 use function ksort;
 use function sprintf;
 
-final class PhpProcessor extends Processor
+class PhpProcessor extends Processor
 {
     protected string $template = <<<PHP
 <?php

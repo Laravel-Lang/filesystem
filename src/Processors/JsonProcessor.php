@@ -8,7 +8,7 @@ use function array_merge;
 use function json_encode;
 use function ksort;
 
-final class JsonProcessor extends Processor
+class JsonProcessor extends Processor
 {
     protected int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
 

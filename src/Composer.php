@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 
 use function in_array;
 
-class Composer
+readonly class Composer
 {
     public function __construct(
         #[Config('localization_main.force')]
@@ -57,9 +57,11 @@ class Composer
 
         $installed = InstalledVersions::getVersion($vendor);
 
-        return $installed === null
-            ? InstalledVersions::satisfies(new VersionParser(), $vendor, $version)
-            : Semver::satisfies($installed, $version);
+        if ($installed === null) {
+            return InstalledVersions::satisfies(new VersionParser(), $vendor, $version);
+        }
+
+        return Semver::satisfies($installed, $version);
     }
 
     protected function projectName(): ?string

@@ -13,7 +13,7 @@ use function dirname;
 use function mb_strtolower;
 use function pathinfo;
 
-class Filesystem
+readonly class Filesystem
 {
     public function __construct(
         protected BaseFilesystem $filesystem,
@@ -39,6 +39,13 @@ class Filesystem
     public function glob(string $pattern, int $flags = 0): array
     {
         return $this->filesystem->glob($pattern, $flags);
+    }
+
+    public function read(string $path, ?string $key = null, array $default = []): array
+    {
+        return $this->isJson($path)
+            ? $this->fromJson($path, $key, $default)
+            : $this->fromPhp($path, $key, $default);
     }
 
     public function fromJson(string $path, ?string $key = null, array $default = []): array
