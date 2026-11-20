@@ -58,7 +58,7 @@ readonly class Composer
         $installed = InstalledVersions::getVersion($vendor);
 
         if ($installed === null) {
-            return InstalledVersions::satisfies(new VersionParser(), $vendor, $version);
+            return InstalledVersions::satisfies(new VersionParser, $vendor, $version);
         }
 
         return Semver::satisfies($installed, $version);
