@@ -14,6 +14,7 @@ use function in_array;
 
 readonly class Composer
 {
+    /** @param array<string> $force */
     public function __construct(
         #[Config('localization_main.force')]
         protected array $force,
@@ -69,6 +70,7 @@ readonly class Composer
         return Arr::get($this->root(), 'name');
     }
 
+    /** @return array<string, mixed> */
     protected function root(): array
     {
         return InstalledVersions::getRootPackage();

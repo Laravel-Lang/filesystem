@@ -36,11 +36,16 @@ class PhpProcessor extends Processor
         return $this->storeContent($data);
     }
 
+    /** @param array<array-key, mixed> $data */
     protected function storeContent(array $data): string
     {
         return sprintf($this->template, $this->export($data));
     }
 
+    /**
+     * @param  array<array-key, mixed>  $content
+     * @return array<array-key, mixed>
+     */
     protected function merge(string $path, array $content, bool $merge): array
     {
         if ($merge) {
@@ -53,6 +58,7 @@ class PhpProcessor extends Processor
         return Arr::dot($content);
     }
 
+    /** @param array<array-key, mixed> $data */
     protected function export(array $data): string
     {
         return VarExporter::export(

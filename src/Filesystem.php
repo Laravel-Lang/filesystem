@@ -8,6 +8,8 @@ use Illuminate\Filesystem\Filesystem as BaseFilesystem;
 use LaravelLang\Filesystem\Processors\JsonProcessor;
 use LaravelLang\Filesystem\Processors\PhpProcessor;
 
+use RuntimeException;
+
 use function base_path;
 use function dirname;
 use function mb_strtolower;
@@ -36,11 +38,17 @@ readonly class Filesystem
         return $this->vendorPath('laravel-lang/library');
     }
 
+    /** @return array<string> */
     public function glob(string $pattern, int $flags = 0): array
     {
         return $this->filesystem->glob($pattern, $flags);
     }
 
+    /**
+     * @param  array<array-key, mixed>  $default
+     *
+     * @return array<array-key, mixed>
+     */
     public function read(string $path, ?string $key = null, array $default = []): array
     {
         return $this->isJson($path)
@@ -48,11 +56,28 @@ readonly class Filesystem
             : $this->fromPhp($path, $key, $default);
     }
 
+    /**
+     * @param  array<array-key, mixed>  $default
+     *
+     * @return array<array-key, mixed>
+     */
     public function fromJson(string $path, ?string $key = null, array $default = []): array
     {
         return $this->jsonProcessor->read($path, $key, $default);
     }
 
+    public function fromString(string $path): string|false
+    {
+        $content = $this->filesystem->get($path);
+
+        if ($content === false) {
+            throw new RuntimeException("Could not read template file `$path`.");
+        }
+
+        return $content;
+    }
+
+    /** @param  array<array-key, mixed>  $items */
     public function storeArray(string $path, array $items, bool $merge = false): void
     {
         $this->filesystem->ensureDirectoryExists(
@@ -78,6 +103,11 @@ readonly class Filesystem
         return mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION)) === 'json';
     }
 
+    /**
+     * @param  array<array-key, mixed>  $default
+     *
+     * @return array<array-key, mixed>
+     */
     public function fromPhp(string $path, ?string $key = null, array $default = []): array
     {
         return $this->phpProcessor->read($path, $key, $default);
@@ -88,11 +118,13 @@ readonly class Filesystem
         $this->filesystem->deleteDirectory($path);
     }
 
+    /** @param  array<array-key, mixed>  $content */
     protected function storeJson(string $path, array $content, bool $merge = false): void
     {
         $this->jsonProcessor->store($path, $content, $merge);
     }
 
+    /** @param  array<array-key, mixed>  $content */
     protected function storePhp(string $path, array $content, bool $merge = false): void
     {
         $this->phpProcessor->store($path, $content, $merge);

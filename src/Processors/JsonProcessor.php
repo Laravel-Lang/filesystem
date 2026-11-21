@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace LaravelLang\Filesystem\Processors;
 
+use LaravelLang\Exceptions\InvalidJsonEncodeException;
+
 use function array_merge;
 use function json_encode;
+use function json_last_error;
+use function json_last_error_msg;
 use function ksort;
 
 class JsonProcessor extends Processor
@@ -27,6 +31,17 @@ class JsonProcessor extends Processor
 
         ksort($data);
 
-        return json_encode($data, $this->flags);
+        return $this->encode($data);
+    }
+
+    protected function encode(array $data): string
+    {
+        $encoded = json_encode($data, $this->flags);
+
+        if ($encoded === false) {
+            throw new InvalidJsonEncodeException(json_last_error_msg(), json_last_error());
+        }
+
+        return $encoded;
     }
 }
