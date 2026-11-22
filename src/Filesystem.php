@@ -7,7 +7,6 @@ namespace LaravelLang\Filesystem;
 use Illuminate\Filesystem\Filesystem as BaseFilesystem;
 use LaravelLang\Filesystem\Processors\JsonProcessor;
 use LaravelLang\Filesystem\Processors\PhpProcessor;
-
 use RuntimeException;
 
 use function base_path;
@@ -41,12 +40,17 @@ readonly class Filesystem
     /** @return array<string> */
     public function glob(string $pattern, int $flags = 0): array
     {
-        return $this->filesystem->glob($pattern, $flags);
+        $paths = $this->filesystem->glob($pattern, $flags);
+
+        if ($paths === false) {
+            throw new RuntimeException("Unable to find paths matching [$pattern].");
+        }
+
+        return $paths;
     }
 
     /**
      * @param  array<array-key, mixed>  $default
-     *
      * @return array<array-key, mixed>
      */
     public function read(string $path, ?string $key = null, array $default = []): array
@@ -58,7 +62,6 @@ readonly class Filesystem
 
     /**
      * @param  array<array-key, mixed>  $default
-     *
      * @return array<array-key, mixed>
      */
     public function fromJson(string $path, ?string $key = null, array $default = []): array
@@ -99,7 +102,6 @@ readonly class Filesystem
 
     /**
      * @param  array<array-key, mixed>  $default
-     *
      * @return array<array-key, mixed>
      */
     public function fromPhp(string $path, ?string $key = null, array $default = []): array

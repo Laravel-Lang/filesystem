@@ -6,8 +6,10 @@ namespace LaravelLang\Filesystem\Processors;
 
 use Illuminate\Support\Arr;
 use Symfony\Component\VarExporter\VarExporter;
+use TypeError;
 
 use function array_merge;
+use function is_array;
 use function ksort;
 use function sprintf;
 
@@ -24,7 +26,13 @@ class PhpProcessor extends Processor
 
     protected function getContent(string $path): array
     {
-        return require $path;
+        $content = require $path;
+
+        if (! is_array($content)) {
+            throw new TypeError("The file [$path] must return an array.");
+        }
+
+        return $content;
     }
 
     protected function putContent(string $path, array $content, bool $merge = false): string
