@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace LaravelLang\Filesystem\Processors;
 
 use Illuminate\Filesystem\Filesystem;
+use TypeError;
+
+use function is_array;
 
 abstract class Processor
 {
@@ -34,7 +37,13 @@ abstract class Processor
             return $content;
         }
 
-        return $content[$key] ?? $default;
+        $value = $content[$key] ?? $default;
+
+        if (! is_array($value)) {
+            throw new TypeError("The value for key [$key] in [$path] must be an array.");
+        }
+
+        return $value;
     }
 
     /** @param array<array-key, mixed> $content */

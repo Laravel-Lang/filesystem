@@ -8,7 +8,6 @@ use Composer\InstalledVersions;
 use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
 use Illuminate\Container\Attributes\Config;
-use Illuminate\Support\Arr;
 
 use function in_array;
 
@@ -67,10 +66,10 @@ readonly class Composer
 
     protected function projectName(): ?string
     {
-        return Arr::get($this->root(), 'name');
+        return $this->root()['name'] ?? null;
     }
 
-    /** @return array<string, mixed> */
+    /** @return array{name?: string|null, ...<string, mixed>} */
     protected function root(): array
     {
         return InstalledVersions::getRootPackage();
