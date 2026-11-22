@@ -1,0 +1,45 @@
+{
+    "name": "laravel-lang/filesystem",
+    "description": "The Laravel-Lang Filesystem package.",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "laravel-lang",
+        "i18n",
+        "localization",
+        "translations"
+    ],
+    "authors": [
+        {
+            "name": "Andrey Helldar",
+            "email": "helldar@dragon-code.pro"
+        },
+        {
+            "name": "Laravel-Lang Team",
+            "homepage": "https://laravel-lang.com"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/Laravel-Lang/mona"
+    },
+    "require": {
+        "php": "^8.3",
+        "composer/semver": "^3.6",
+        "illuminate/container": "^12.0 || ^13.0 || dev-master",
+        "illuminate/filesystem": "^12.0 || ^13.0 || dev-master",
+        "illuminate/support": "^12.0 || ^13.0 || dev-master",
+        "laravel-lang/exceptions": "self.version",
+        "symfony/var-exporter": "^7.4 || ^8.1"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "LaravelLang\\Filesystem\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}
