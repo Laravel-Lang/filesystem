@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaravelLang\Filesystem\Processors;
 
+use JsonException;
 use LaravelLang\Exceptions\InvalidJsonEncodeException;
 
 use function array_merge;
@@ -37,7 +38,11 @@ class JsonProcessor extends Processor
     /** @param  array<int|string, mixed>  $data */
     protected function encode(array $data): string
     {
-        $encoded = json_encode($data, $this->flags);
+        try {
+            $encoded = json_encode($data, $this->flags);
+        } catch (JsonException $exception) {
+            throw InvalidJsonEncodeException::from($exception);
+        }
 
         if ($encoded === false) {
             throw new InvalidJsonEncodeException(json_last_error_msg(), json_last_error());

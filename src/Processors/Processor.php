@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LaravelLang\Filesystem\Processors;
 
 use Illuminate\Filesystem\Filesystem;
-use TypeError;
+use LaravelLang\Exceptions\InvalidTranslationFileContentException;
 
 use function is_array;
 
@@ -40,7 +40,7 @@ abstract class Processor
         $value = $content[$key] ?? $default;
 
         if (! is_array($value)) {
-            throw new TypeError("The value for key [$key] in [$path] must be an array.");
+            throw InvalidTranslationFileContentException::expectedArrayForKey($path, $key);
         }
 
         return $value;

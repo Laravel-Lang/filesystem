@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace LaravelLang\Filesystem;
 
 use Illuminate\Filesystem\Filesystem as BaseFilesystem;
+use LaravelLang\Exceptions\PathSearchException;
 use LaravelLang\Filesystem\Processors\JsonProcessor;
 use LaravelLang\Filesystem\Processors\PhpProcessor;
-use RuntimeException;
 
 use function base_path;
 use function dirname;
@@ -43,7 +43,7 @@ readonly class Filesystem
         $paths = $this->filesystem->glob($pattern, $flags);
 
         if ($paths === false) {
-            throw new RuntimeException("Unable to find paths matching [$pattern].");
+            throw PathSearchException::matching($pattern);
         }
 
         return $paths;
