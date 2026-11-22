@@ -34,6 +34,7 @@ class JsonProcessor extends Processor
         return $this->encode($data);
     }
 
+    /** @param  array<int|string, mixed>  $data */
     protected function encode(array $data): string
     {
         $encoded = json_encode($data, $this->flags);

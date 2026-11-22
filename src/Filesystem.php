@@ -66,15 +66,9 @@ readonly class Filesystem
         return $this->jsonProcessor->read($path, $key, $default);
     }
 
-    public function fromString(string $path): string|false
+    public function fromString(string $path): string
     {
-        $content = $this->filesystem->get($path);
-
-        if ($content === false) {
-            throw new RuntimeException("Could not read template file `$path`.");
-        }
-
-        return $content;
+        return $this->filesystem->get($path);
     }
 
     /** @param  array<array-key, mixed>  $items */
