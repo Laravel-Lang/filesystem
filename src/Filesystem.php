@@ -8,7 +8,9 @@ use Illuminate\Filesystem\Filesystem as BaseFilesystem;
 use LaravelLang\Exceptions\PathSearchException;
 use LaravelLang\Filesystem\Processors\JsonProcessor;
 use LaravelLang\Filesystem\Processors\PhpProcessor;
+use Symfony\Component\Finder\SplFileInfo;
 
+use function array_values;
 use function base_path;
 use function dirname;
 use function mb_strtolower;
@@ -49,6 +51,12 @@ readonly class Filesystem
         return $paths;
     }
 
+    /** @return list<SplFileInfo> */
+    public function files(string $path): array
+    {
+        return array_values($this->filesystem->allFiles($path));
+    }
+
     /**
      * @param  array<array-key, mixed>  $default
      * @return array<array-key, mixed>
@@ -77,6 +85,10 @@ readonly class Filesystem
     /** @param  array<array-key, mixed>  $items */
     public function storeArray(string $path, array $items, bool $merge = false): void
     {
+        if ($items === []) {
+            return;
+        }
+
         $this->filesystem->ensureDirectoryExists(
             dirname($path)
         );
@@ -90,13 +102,21 @@ readonly class Filesystem
      * @param  array<array-key, mixed>  $items
      * @param  list<string>  $trailingKeys
      */
-    public function storePhpArrayWithTrailingKeys(string $path, array $items, array $trailingKeys, bool $merge = false): void
-    {
+    public function storePhpArrayWithTrailingKeys(
+        string $path,
+        array $items,
+        array $trailingKeys,
+        bool $merge = false,
+    ): void {
         $this->store($path, $this->phpProcessor->renderWithTrailingKeys($path, $items, $trailingKeys, $merge));
     }
 
     public function store(string $path, string $content): void
     {
+        if (! $content) {
+            return;
+        }
+
         $this->filesystem->ensureDirectoryExists(
             dirname($path)
         );
@@ -120,7 +140,9 @@ readonly class Filesystem
 
     public function ensureDelete(string $path): void
     {
-        $this->filesystem->deleteDirectory($path);
+        $this->filesystem->isFile($path)
+            ? $this->filesystem->delete($path)
+            : $this->filesystem->deleteDirectory($path);
     }
 
     /** @param  array<array-key, mixed>  $content */
